@@ -49,6 +49,10 @@ class GlobalMetricsTest(unittest.TestCase):
         self.text = "This is notaword also\nAnother lnie with invalid words".split("\n")
         self.global_metrics = GlobalMetrics()
 
+    def testLexicalDiversity(self):
+        diversity = self.global_metrics.lexical_diversity(["Hello this word once", "hello this word word twice"])
+        self.assertEqual(None, diversity)
+
     def testResultDict(self):
         lexical_scores = self.global_metrics.lexical_scores(self.text)
         self.assertEqual({'line_number': 0,
