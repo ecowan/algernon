@@ -27,5 +27,5 @@ class SpellCheck:
         correct = [x for x in words if self.d.check(x)]
         fraction = len(correct)/float(len(words))
         self.logger.debug("%s\t%s", input_string, str(fraction))
-        print input_string, fraction
+        #print input_string, fraction
         return fraction
