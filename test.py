@@ -3,7 +3,7 @@ __author__ = 'ecowan'
 import unittest
 from spell_check import SpellCheck
 from parser import Parser
-from metrics import LocalMetrics, GlobalMetrics
+from metrics import LocalMetrics, Diversity, GlobalMetrics
 
 
 class ParserTest(unittest.TestCase):
@@ -42,16 +42,22 @@ class LocalMetricsTest(unittest.TestCase):
                           'line_text': 'Hello notaword'}, lexical_scores)
 
 
+class DiversityTest(unittest.TestCase):
+
+    def setUp(self):
+        self.input_string = "Hi this is a sentence. This is also a sentence"
+        self.diversity = Diversity(self.input_string, 10)
+
+    def testDummy(self):
+        unique_fraction = self.diversity.fraction_unique_words()
+        self.assertEqual([(0, {'fraction_unique_words': 0.8})], unique_fraction)
+
 class GlobalMetricsTest(unittest.TestCase):
 
     def setUp(self):
         #self.text = Parser("ch1.txt").lines
         self.text = "This is notaword also\nAnother lnie with invalid words".split("\n")
         self.global_metrics = GlobalMetrics()
-
-    def testLexicalDiversity(self):
-        diversity = self.global_metrics.lexical_diversity(["Hello this word once", "hello this word word twice"])
-        self.assertEqual(None, diversity)
 
     def testResultDict(self):
         lexical_scores = self.global_metrics.lexical_scores(self.text)

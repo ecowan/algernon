@@ -22,6 +22,24 @@ class LocalMetrics:
                 'line_score': correct}
 
 
+class Diversity:
+
+    def __init__(self, input_string, bin_size):
+        self.input_string = input_string
+        self.words = word_tokenize(input_string)
+        self.word_bins = self.split_into_bins(bin_size)
+
+    def split_into_bins(self, bin_size):
+        return [self.words[bin_size*i:bin_size*(i+1)] for i in range(0, len(self.words)/bin_size)]
+
+    @staticmethod
+    def _lexical_diversity(word_list):
+        return {'fraction_unique_words': len(set(word_list))/float(len(word_list))}
+
+    def fraction_unique_words(self):
+        return [(i, self._lexical_diversity(w)) for (i,w) in enumerate(self.word_bins)]
+
+
 class GlobalMetrics:
     '''
     Properties of the text on a chapter level
@@ -43,10 +61,6 @@ class GlobalMetrics:
     def bin_averages(bin_scores):
         return [average(x) for x in bin_scores]
 
-    @staticmethod
-    def lexical_diversity(lines):
-        words = [x for word_list in [word_tokenize(line) for line in lines] for x in word_list]
-        return {'fraction_unique_words': len(set(words))/float(len(words))}
 
     def metrics(self, lines, bin_size):
         lexical_scores = self.lexical_scores(lines)
