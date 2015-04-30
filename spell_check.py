@@ -18,6 +18,18 @@ class SpellCheck:
         self.d = enchant.Dict("en_US")
         self.logger = logger
 
+    def valid_word(self, word):
+        return self.d.check(word)
+
+    def count_valid_words(self, input_string):
+        return len([x for x in word_tokenize(input_string) if self.valid_word(x)])
+
+    def filter_invalid_words(self, input_string):
+        if len(input_string) > 0:
+            return [x for x in word_tokenize(input_string) if self.d.check(x)]
+        else:
+            return ''
+
     def fraction_correct(self, input_string):
         '''
         Fraction of words in text that are valid English
