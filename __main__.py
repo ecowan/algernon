@@ -14,16 +14,17 @@ def plot_diversity(fraction_unique_words):
 def main():
     parser = Parser("data/full_text.txt")
     lines = parser.lines
+    chapters = parser.chapters
     global_metrics = GlobalMetrics()
-    averages = global_metrics.metrics(lines, 10)['bin_averages']
-    print averages
+    averages = global_metrics.metrics(chapters, 1)['bin_averages']
     bins = [x[0] for x in averages]
     avgs = [x[1] for x in averages]
     #print bins
 
-    diversity = Diversity(parser.text_string, 5000)
-    print diversity.fraction_unique_words()
-    plot_diversity(diversity.fraction_unique_words())
+    diversity = Diversity(parser.text_string, 2000)
+    unique_valid_words = diversity.fraction_unique_valid_words(chapters)
+    print "Unique valid words per chapter:\n", unique_valid_words
+    plot_diversity(unique_valid_words)
 
     #plt.plot(bins, avgs, 'r-')
     #plt.show()
