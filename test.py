@@ -17,6 +17,10 @@ class ParserTest(unittest.TestCase):
     def testLineSplit(self):
         self.assertEqual(self.parser.lines[0], 'Progris riport 1 marten 3.')
 
+    def testChapterSplit(self):
+        self.chapters = Parser("data/full_text.txt").chapters
+        self.assertEqual(17, len(self.chapters))
+
 
 class SpellCheckTest(unittest.TestCase):
 
@@ -35,6 +39,9 @@ class LocalMetricsTest(unittest.TestCase):
     def setUp(self):
         self.local_metrics = LocalMetrics()
 
+    def testPunctuationFraction(self):
+        self.assertEqual(0.2, self.local_metrics.fraction_punctuation("test."))
+
     def testResultDict(self):
         lexical_scores = self.local_metrics.lexical_score("Hello notaword", 1)
         self.assertEqual({'line_number': 1,
@@ -45,12 +52,17 @@ class LocalMetricsTest(unittest.TestCase):
 class DiversityTest(unittest.TestCase):
 
     def setUp(self):
+        self.chapters = Parser("data/full_text.txt").chapters
         self.input_string = "Hi this is a sentence. This is also a sentence"
         self.diversity = Diversity(self.input_string, 10)
 
-    def testDummy(self):
-        unique_fraction = self.diversity.fraction_unique_words()
-        self.assertEqual([(0, {'fraction_unique_words': 0.8})], unique_fraction)
+    def testFraction(self):
+        unique_fraction = self.diversity.fraction_unique_words([self.input_string])
+        self.assertEqual([(0, {'fraction_unique_words': 0.30434782608695654})], unique_fraction)
+
+    def testFractionUniqueValid(self):
+        unique_fraction_valid = self.diversity.fraction_unique_valid_words(self.chapters)
+        self.assertEqual((0, {'fraction_unique_words': 0.5028901734104047}), unique_fraction_valid[0])
 
 class GlobalMetricsTest(unittest.TestCase):
 
