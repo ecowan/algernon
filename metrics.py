@@ -1,5 +1,6 @@
 __author__ = 'ecowan'
 
+import re
 from nltk import word_tokenize
 from spell_check import SpellCheck
 
@@ -15,6 +16,13 @@ class LocalMetrics:
     def __init__(self):
         self.spell_check = SpellCheck()
 
+    @staticmethod
+    def fraction_punctuation(input_string):
+        if len(input_string) > 0:
+            return len(re.compile('\W+').findall(input_string))/float(len(input_string))
+        else:
+            return None
+
     def lexical_score(self, line, line_number):
         correct = self.spell_check.fraction_correct(line)
         return {'line_number': line_number,
@@ -25,6 +33,7 @@ class LocalMetrics:
 class Diversity:
 
     def __init__(self, input_string, bin_size):
+        self.spell_check = SpellCheck()
         self.input_string = input_string
         self.words = word_tokenize(input_string)
         self.word_bins = self.split_into_bins(bin_size)
@@ -34,11 +43,21 @@ class Diversity:
 
     @staticmethod
     def _lexical_diversity(word_list):
-        return {'fraction_unique_words': len(set(word_list))/float(len(word_list))}
+        if len(word_list) > 0:
+            # print set(word_list), word_list, {'fraction_unique_words': len(set(word_list))/float(len(word_list))}
+            return {'fraction_unique_words': len(set(word_list))/float(len(word_list))}
+        else:
+            return {'fraction_unique_words': 0.0}
 
-    def fraction_unique_words(self):
+    def fraction_unique_words_per_bin(self):
         return [(i, self._lexical_diversity(w)) for (i,w) in enumerate(self.word_bins)]
 
+    def fraction_unique_words(self, string_list):
+        return [(i, self._lexical_diversity(w)) for (i,w) in enumerate(string_list)]
+
+    def fraction_unique_valid_words(self, string_list):
+        string_list = [self.spell_check.filter_invalid_words(x) for x in string_list]
+        return self.fraction_unique_words(string_list)
 
 class GlobalMetrics:
     '''
@@ -46,6 +65,9 @@ class GlobalMetrics:
     '''
     def __init__(self):
         self.local_metrics = LocalMetrics()
+
+    def unique_words(self, string_list):
+        return
 
     def lexical_scores(self, lines):
         return [self.local_metrics.lexical_score(line, index) for (index, line) in enumerate(lines)]
@@ -60,7 +82,6 @@ class GlobalMetrics:
     @staticmethod
     def bin_averages(bin_scores):
         return [average(x) for x in bin_scores]
-
 
     def metrics(self, lines, bin_size):
         lexical_scores = self.lexical_scores(lines)
