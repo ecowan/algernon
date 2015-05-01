@@ -23,6 +23,22 @@ class LocalMetrics:
         else:
             return None
 
+    @staticmethod
+    def fraction_quotes(input_string):
+        if len(input_string) > 0:
+            quotes = len([x for x in input_string if x=='"'])
+            return quotes/float(len(input_string))
+        else:
+            return None
+
+    @staticmethod
+    def quotes_length(input_string):
+        quotes = [a for i,a in enumerate(input_string.split('"')) if i>0 and i%3 == 0 or i==1]
+        if len(quotes) == 0:
+            return 0
+        else:
+            return sum([len(x) for x in quotes])/float(len(quotes))
+
     def lexical_score(self, line, line_number):
         correct = self.spell_check.fraction_correct(line)
         return {'line_number': line_number,
