@@ -42,6 +42,12 @@ class LocalMetricsTest(unittest.TestCase):
     def testPunctuationFraction(self):
         self.assertEqual(0.2, self.local_metrics.fraction_punctuation("test."))
 
+    def testQuoteFraction(self):
+        self.assertEqual(0.25, self.local_metrics.fraction_quotes('"Hi"'))
+
+    def testQuoteLength(self):
+        self.assertEqual(0.64, self.local_metrics.quotes_length('"I said something" I said'))
+
     def testResultDict(self):
         lexical_scores = self.local_metrics.lexical_score("Hello notaword", 1)
         self.assertEqual({'line_number': 1,
